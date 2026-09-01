@@ -1,0 +1,423 @@
+identity:
+  name: "胡时嘉 SHIJIA HU"
+  headline:
+    zh: "AI Learning Product｜AI 产品 · 教育产品 · Learning Experience Design"
+    en: "AI Learning Product · Product Strategy · Learning Experience Design"
+  contact:
+    - "andrew_time@outlook.com"
+    - "+86 153 8101 8066"
+    - "github.com/shhh-hoo"
+    - "9701.shijia.work"
+
+metrics:
+  - value: "200+"
+    label: { zh: "学生覆盖", en: "students served" }
+  - value: "40+"
+    label: { zh: "教师协作", en: "teachers supported" }
+  - value: "20+"
+    label: { zh: "班级运行", en: "classes operated" }
+  - value: "20+"
+    label: { zh: "9701 真实用户", en: "9701 real users" }
+
+sections:
+  - id: work
+    title: { zh: "工作经历", en: "EXPERIENCE" }
+    entries:
+      - id: hailiang
+        title: { zh: "绍兴海亮外籍人员子女学校", en: "Hailiang International School, Shaoxing" }
+        subtitle:
+          zh: "Academic Operations & Curriculum Development / A-Level STEM Teacher"
+          en: "Academic Operations & Curriculum Development / A-Level STEM Teacher"
+        meta: { zh: "2023.05–2026.07｜浙江绍兴", en: "May 2023–Jul 2026 · Shaoxing, China" }
+        bullets:
+          - id: hailiang-rollout
+            facts:
+              - "覆盖英语、数学、化学等多学科"
+              - "所在教务体系覆盖 200+ 学生、40+ 教师、20+ 班级"
+              - "参与课程体系调整并落地 curriculum map、教材、测评、分班与复习方案"
+            default_profile: ai_product
+            variants:
+              - profile: ai_product
+                tags: [product rollout, system design, curriculum transformation, stakeholder management, operations]
+                text:
+                  zh: "核心参与学校国际课程体系升级与落地，覆盖英语、数学、化学等多学科；将新课程标准转化为课程地图、教学进度、教材体系、测评机制、分班逻辑与复习方案，连接课程设计、教师执行与教务运营，支撑 200+ 学生、40+ 教师及 20+ 班级稳定运行。"
+                  en: "Helped operationalize a multi-subject international curriculum transition across English, Mathematics and Chemistry, translating new standards into curriculum maps, pacing, resources, assessment and placement mechanisms for 200+ students, 40+ teachers and 20+ classes."
+              - profile: education_product
+                tags: [curriculum design, learning product, assessment, content system]
+                text:
+                  zh: "推动英语、数学、化学等多学科课程体系落地，建立 curriculum map、教材、阶段测评和课程衔接方案，将课程框架转化为教师可直接执行、可持续迭代的教学体系。"
+                  en: "Built executable curriculum systems across English, Mathematics and Chemistry, covering curriculum maps, instructional resources, staged assessment and bridging content so teachers could deliver consistently without rebuilding from scratch."
+              - profile: solutions
+                tags: [implementation, rollout, stakeholder alignment, delivery]
+                text:
+                  zh: "协调课程、教师、学生与运营约束，将新的国际课程体系转化为可执行方案，并支持 200+ 学生和 40+ 教师完成课程体系切换与稳定运行。"
+                  en: "Coordinated curriculum, teacher, student and operational constraints to turn a new international curriculum framework into an executable rollout supporting 200+ students and 40+ teachers."
+          - id: hailiang-assets
+            facts:
+              - "参与教材体系建设与课程资源选型"
+              - "形成课程包、bridging content 和阶段性学习任务"
+            default_profile: education_product
+            variants:
+              - profile: education_product
+                tags: [curriculum, content strategy, learning design, instructional design]
+                text:
+                  zh: "负责多学科课程研发与教学资源体系建设，根据 syllabus、学生基础、授课周期和考试要求筛选并重组教材、练习、Past Papers 与补充材料，沉淀为可复制、可交接、可持续迭代的课程资产。"
+                  en: "Developed reusable curriculum assets by selecting and restructuring textbooks, practice, past papers and bridging materials against syllabus requirements, learner readiness, teaching time and assessment needs."
+              - profile: ai_product
+                tags: [productization, reusable assets, user workflow, systemization]
+                text:
+                  zh: "将分散的教材、练习、考试资源与教师经验重构为可复用课程资产和标准化执行路径，降低课程交付对个人教师临时备课与隐性经验的依赖。"
+                  en: "Productized fragmented resources and tacit teacher knowledge into reusable curriculum assets and repeatable delivery workflows, reducing dependency on individual teachers' ad-hoc preparation."
+              - profile: solutions
+                tags: [enablement, implementation, documentation, adoption]
+                text:
+                  zh: "建立教师可直接执行的课程包与衔接材料，支持新课程快速上线、教师接手与后续迭代，把一次性课程设计转化为可持续交付能力。"
+                  en: "Created teacher-ready curriculum packages and bridging resources that supported faster rollout, handover and continuous iteration."
+          - id: hailiang-lifecycle
+            facts:
+              - "深度介入学生从入学、分班、选课、阶段调整到大学申请的完整学术生命周期"
+              - "协调学生、家长、教师与管理层"
+            default_profile: ai_product
+            variants:
+              - profile: ai_product
+                tags: [user lifecycle, decision making, stakeholder management, prioritization, user research]
+                text:
+                  zh: "深度介入学生从入学、分班、选课、阶段调整到大学申请的完整学术生命周期，综合诊断测评、学业表现、课程难度、升学目标与个体情况，在关键节点支持学校和学生做出高影响决策，并协调学生、家长、教师与管理层形成可执行方案。"
+                  en: "Supported students across the full academic lifecycle—from entry and placement through subject selection, progression changes and university applications—synthesizing performance, course difficulty and long-term goals into high-impact recommendations across students, parents, teachers and school leadership."
+              - profile: solutions
+                tags: [stakeholder, advisory, customer journey, decision support, implementation]
+                text:
+                  zh: "长期持有学生完整学术 context，在分班、选课、课程调整和升学关键节点整合多源信息并协调多方诉求，帮助学校将复杂个案转化为可执行的学术与升学方案。"
+                  en: "Maintained longitudinal student context and coordinated multiple stakeholders to turn complex placement, subject-selection and progression cases into executable academic plans."
+              - profile: education_product
+                tags: [student success, learner journey, academic advising, personalization]
+                text:
+                  zh: "基于诊断测评、持续学业表现与升学目标参与学生全周期规划，使分班、选课和阶段调整不再只是一次性判断，而是能够随学生发展持续修正的学习路径。"
+                  en: "Used diagnostic evidence, ongoing performance and progression goals to treat placement and course decisions as an evolving learner pathway rather than one-off decisions."
+          - id: hailiang-chem-system
+            facts:
+              - "从零建立 A-Level Chemistry 教学与备考体系"
+              - "覆盖课程规划、知识与记忆材料、分层练习、Past Paper、Mock、实验训练、常见失分与考前复习"
+              - "进一步产品化为 9701 Learning Product Suite，20+ 学生真实使用"
+            default_profile: ai_product
+            variants:
+              - profile: ai_product
+                tags: [0 to 1 product, productization, real users, learning product, iteration]
+                text:
+                  zh: "从零建立并迭代完整的 A-Level Chemistry 教学与备考体系，并进一步将课程规划、知识与记忆材料、分层练习、Past Paper、实验训练与高频错误等逻辑产品化为 9701 Learning Product Suite，已有 20+ 学生在真实课堂及课后使用。"
+                  en: "Built an end-to-end A-Level Chemistry teaching and exam-preparation system from scratch, then productized its curriculum, retrieval, practice and error-analysis logic into the 9701 Learning Product Suite used by 20+ students in real classroom and self-study settings."
+              - profile: education_product
+                tags: [curriculum system, assessment, retrieval practice, exam preparation]
+                text:
+                  zh: "建立覆盖 syllabus mapping、年度课程规划、核心知识、分层练习、Past Paper、Mock、实验训练、常见失分与考前 revision 的完整 A-Level Chemistry 体系，并根据学生表现持续迭代。"
+                  en: "Created a reusable A-Level Chemistry system spanning syllabus mapping, annual pacing, core knowledge, differentiated practice, past papers, mocks, practical training and revision."
+          - id: hailiang-enablement
+            facts:
+              - "负责 Chemistry practical 准备、Mock practical 与实验考试培训"
+              - "培养并交接新任 A-Level Chemistry 教师"
+            default_profile: solutions
+            variants:
+              - profile: solutions
+                tags: [enablement, onboarding, knowledge transfer, operations, delivery]
+                text:
+                  zh: "建立 Chemistry practical 的准备、训练与考试交付流程，并承担新任 A-Level Chemistry 教师培养与课程能力交接，将 curriculum map、assessment standards、Past Paper、实验准备与常见学生问题从个人经验转化为可复制的团队能力。"
+                  en: "Standardized Chemistry practical preparation and exam delivery while onboarding a new A-Level Chemistry teacher, transferring curriculum maps, assessment standards, past-paper practice and practical workflows into reusable team capability."
+              - profile: education_product
+                tags: [teacher enablement, teacher workflow, assessment, curriculum operations]
+                text:
+                  zh: "将课程节奏、测评标准、Past Paper 使用、实验准备与学生高频问题沉淀成可交接流程，通过共同备课、课堂沟通与考试复盘帮助新教师逐步独立承担完整课程周期。"
+                  en: "Turned pacing, assessment, past-paper use, practical preparation and recurring learner issues into a teachable operating system that enabled a new teacher to independently own the full course cycle."
+          - id: hailiang-outcomes
+            facts:
+              - "三年来学校各年级化学 A/A* 率在全集团保持领先"
+              - "2025 年获校级最佳教师奖"
+            default_profile: ai_product
+            variants:
+              - profile: ai_product
+                tags: [outcomes, metrics, iteration, quality, results]
+                text:
+                  zh: "持续用学生表现、Mock 与正式考试结果反向迭代课程设计与教学策略；三年来学校各年级 Chemistry A/A* 率在全集团保持领先，并获 2025 年校级“最佳教师奖”。"
+                  en: "Closed the loop between learner performance, mock exams and curriculum iteration; Chemistry A/A* rates remained among the group's leaders across grade levels for three years, alongside a 2025 school-level Best Teacher Award."
+              - profile: education_product
+                tags: [learning outcomes, assessment, continuous improvement]
+                text:
+                  zh: "以 Mock、正式考试和高频失分数据持续修正课程顺序、练习强度与答题训练，三年来学校各年级 Chemistry A/A* 率在全集团保持领先。"
+                  en: "Used mock and final assessment evidence to continuously revise sequencing, practice intensity and exam strategy, sustaining group-leading Chemistry A/A* rates across grade levels for three years."
+      - id: emq
+        title: { zh: "EMQ Technologies 映云科技", en: "EMQ Technologies" }
+        subtitle: { zh: "Software Engineer", en: "Software Engineer" }
+        meta: { zh: "2021.12–2023.04｜杭州", en: "Dec 2021–Apr 2023 · Hangzhou, China" }
+        bullets:
+          - id: emq-production
+            facts:
+              - "参与分布式流数据库 HStreamDB 的生产研发与版本交付"
+              - "涉及后端服务、API、数据库、存储、测试与技术文档"
+            default_profile: technical
+            variants:
+              - profile: technical
+                tags: [distributed systems, backend, api, database, production, release]
+                text:
+                  zh: "参与分布式流数据库 HStreamDB 的生产研发与版本交付，覆盖后端服务、API、数据库与存储、测试及技术文档，积累复杂系统从技术设计到正式发布的完整工程经验。"
+                  en: "Contributed to production development and release delivery for HStreamDB, spanning backend services, APIs, database/storage, testing and technical documentation."
+              - profile: ai_product
+                tags: [technical product, feasibility, engineering collaboration, delivery]
+                text:
+                  zh: "在 HStreamDB 生产研发中将系统需求落实为 API contract、数据结构、异常语义与状态处理，并参与测试和 release readiness，为后续技术产品判断建立工程底座。"
+                  en: "Translated system requirements into API contracts, data structures, error semantics and state handling, with hands-on testing and release-readiness experience that now informs technical product decisions."
+          - id: emq-collaboration
+            facts:
+              - "参与 Agile/Jira、技术设计、Code Review、测试、依赖协调与 release readiness"
+              - "编写英文技术文档并与海外团队协作"
+            default_profile: technical
+            variants:
+              - profile: technical
+                tags: [agile, code review, documentation, cross functional, international]
+                text:
+                  zh: "在 Agile / Jira 流程中参与需求讨论、技术设计、Code Review、测试、依赖协调与 release readiness，并长期以英文技术文档和 PR 与海外团队同步系统行为、工程限制与交付进展。"
+                  en: "Worked across requirements, design, code review, testing, dependency coordination and release readiness in Agile/Jira, documenting system behavior and engineering constraints in English for distributed teams."
+              - profile: solutions
+                tags: [cross-functional, communication, delivery, stakeholder]
+                text:
+                  zh: "长期在工程、测试和海外协作之间同步系统行为、实现限制与发布风险，形成将技术细节翻译为团队共同决策依据的能力。"
+                  en: "Bridged engineering, testing and international collaborators by translating implementation constraints and release risk into shared decision context."
+      - id: bristol-ta
+        title: { zh: "University of Bristol 布里斯托大学", en: "University of Bristol" }
+        subtitle: { zh: "Teaching Assistant — Functional Programming / Language Engineering", en: "Teaching Assistant — Functional Programming / Language Engineering" }
+        meta: { zh: "2019.10–2020.05｜英国布里斯托", en: "Oct 2019–May 2020 · Bristol, UK" }
+        bullets:
+          - id: bristol-scaffolding
+            facts:
+              - "支持 100+ 学生"
+              - "根据学生已有理解调整解释、提示与调试路径"
+            default_profile: education_product
+            variants:
+              - profile: education_product
+                tags: [scaffolding, learning, student support, debugging, teaching]
+                text:
+                  zh: "支持 100+ 学生完成函数式编程及语言工程课程实验，通过代码审查、调试与针对性提示定位阻塞点，并根据学生已有理解调整 scaffolding，而非直接提供完整答案。"
+                  en: "Supported 100+ students in functional programming and language engineering labs, adapting debugging support and scaffolding to each learner's existing understanding rather than supplying complete answers."
+
+  - id: education
+    title: { zh: "教育经历", en: "EDUCATION" }
+    entries:
+      - id: bristol-education
+        title: { zh: "University of Bristol 布里斯托大学", en: "University of Bristol" }
+        subtitle: { zh: "BEng (Hons) Computer Science with Innovation｜计算机科学与创新 荣誉工程学学士", en: "BEng (Hons) Computer Science with Innovation" }
+        meta: { zh: "2017.09–2020.07｜英国布里斯托", en: "Sep 2017–Jul 2020 · Bristol, UK" }
+        bullets:
+          - id: bristol-research
+            facts:
+              - "课程跨计算机科学、软件工程、创新创业、用户研究与产品开发"
+              - "客户研究项目综合分析 50+ 用户需求与行为"
+            default_profile: ai_product
+            variants:
+              - profile: ai_product
+                tags: [user research, product development, innovation, stakeholder]
+                text:
+                  zh: "跨计算机科学、软件工程、创新创业、用户研究与产品开发培养；在外部客户项目中综合访谈、观察、问卷与 desk research 分析 50+ 用户需求和行为，并将研究转化为产品 / 服务建议。"
+                  en: "Interdisciplinary training across computer science, software engineering, innovation and product development; synthesized interviews, observation, surveys and desk research from 50+ users into recommendations for an external client project."
+
+  - id: projects
+    title: { zh: "精选产品实践", en: "SELECTED PRODUCT WORK" }
+    entries:
+      - id: cuelayer
+        title: { zh: "CueLayer", en: "CueLayer" }
+        subtitle: { zh: "Speech-first Teaching Presentation Layer｜Product Lead / Builder", en: "Speech-first Teaching Presentation Layer · Product Lead / Builder" }
+        meta: { zh: "2026.08–至今｜Working Prototype", en: "Aug 2026–Present · Working Prototype" }
+        bullets:
+          - id: cuelayer-thesis
+            facts:
+              - "保留教师完整原始表达"
+              - "Plain Caption 为 canonical surface"
+              - "FX 可关闭，AI 失效时完整字幕仍可用"
+            default_profile: ai_product
+            variants:
+              - profile: ai_product
+                tags: [product thesis, ai UX, graceful degradation, teacher workflow, realtime]
+                text:
+                  zh: "面向实时授课、录课与在线教学设计 speech-first presentation layer：保留教师完整表达，以 Plain Caption 作为 canonical surface，并用可关闭 FX 呈现重点、关系与概念变化，使 AI 增强失效时教学信息仍完整可用。"
+                  en: "Designed a speech-first presentation layer for live and recorded teaching that preserves the teacher's complete expression as the canonical caption surface, with optional visual FX for emphasis, relationships and conceptual change so the experience degrades gracefully when AI is unavailable."
+              - profile: education_product
+                tags: [teacher experience, learning experience, cognitive load, note taking]
+                text:
+                  zh: "围绕教师自然讲解设计视觉辅助层，在不替学生总结课程、不剥夺自主笔记的前提下，把口头表达中的重点、关系和变化转化为克制的实时视觉线索。"
+                  en: "Designed restrained live visual cues around natural teaching without replacing students' own synthesis or note-taking."
+          - id: cuelayer-grammar
+            facts:
+              - "核心 visual grammar 为 FOCUS / RELATE / TRANSFORM"
+              - "由结构化 plan 控制 motion，而非模型直接生成动画"
+            default_profile: ai_product
+            variants:
+              - profile: ai_product
+                tags: [structured output, ai control, interaction model, deterministic runtime]
+                text:
+                  zh: "将开放式视觉表达收敛为 FOCUS / RELATE / TRANSFORM 三类最小 motion primitives，并用结构化 plan 控制 treatment、intensity、duration 与状态 progression；AI 负责不确定语义判断，deterministic runtime 负责可预测执行。"
+                  en: "Reduced open-ended visual generation to three motion primitives—FOCUS, RELATE and TRANSFORM—using structured plans for treatment, intensity, duration and progression; AI handles uncertain interpretation while a deterministic runtime executes predictably."
+              - profile: technical
+                tags: [renderer, state machine, structured plan, deterministic execution]
+                text:
+                  zh: "建立 phrase-level target、pending / active / completed progression 与统一 Motion Grammar，使 semantic planner 与 renderer 解耦，并可通过 fixtures 和 replay 独立验证视觉执行。"
+                  en: "Defined phrase-level targets, pending/active/completed progression and a unified motion grammar to decouple semantic planning from renderer execution and enable fixture-based replay."
+          - id: cuelayer-architecture
+            facts:
+              - "Speech-first Caption Engine 与 Slide-linked Overlay Engine 分层"
+              - "已完成 FX engine core、8 组 visual fixtures、replay/plan inspection、CI"
+            default_profile: technical
+            variants:
+              - profile: ai_product
+                tags: [scope, architecture, latency, mvp, tradeoff]
+                text:
+                  zh: "主动将低延迟 Speech-first Caption Engine 与后续 Slide-linked Overlay Engine 分层，控制实时链路 latency、复杂度与 failure surface；当前已完成 FX engine core、8 组 visual fixtures、replay / plan inspection 与 CI 验证。"
+                  en: "Separated the low-latency Speech-first Caption Engine from a later Slide-linked Overlay Engine to control latency, complexity and failure surface; completed the FX engine core, eight visual fixtures, replay/plan inspection and CI validation."
+              - profile: technical
+                tags: [architecture, realtime, latency, testing, ci]
+                text:
+                  zh: "通过清晰的引擎边界、fixtures、replay 与 CI 建立可观察的实时渲染链路，并为后续 ASR、semantic planner 与课程知识接入保留扩展接口。"
+                  en: "Built an observable realtime rendering pipeline with explicit engine boundaries, fixtures, replay and CI, leaving clean extension points for ASR, semantic planning and domain knowledge."
+      - id: product-9701
+        title: { zh: "9701 Chemistry Learning Product Suite", en: "9701 Chemistry Learning Product Suite" }
+        subtitle: { zh: "Founder / Product & Engineering", en: "Founder · Product & Engineering" }
+        meta: { zh: "Deployed Product｜9701.shijia.work", en: "Deployed Product · 9701.shijia.work" }
+        bullets:
+          - id: p9701-real-use
+            facts:
+              - "从真实 A-Level Chemistry 教学问题出发"
+              - "独立完成产品定义、交互、开发、部署与持续迭代"
+              - "20+ 学生真实课堂及课后使用"
+            default_profile: ai_product
+            variants:
+              - profile: ai_product
+                tags: [0 to 1, deployed product, real users, product ownership, iteration]
+                text:
+                  zh: "从真实 A-Level Chemistry 教学问题出发，独立完成产品定义、信息架构、学习交互、技术实现、部署与持续迭代；产品已有 20+ 学生在课堂与课后真实使用。"
+                  en: "Owned 9701 end to end—from problem framing and information architecture through learning interaction, engineering, deployment and iteration—with 20+ students using it in real classroom and self-study contexts."
+              - profile: education_product
+                tags: [learning product, curriculum, student experience, adoption]
+                text:
+                  zh: "将真实课堂中的 syllabus structure、考试要求、高频错误与学生复习行为转化为统一数字学习体验，并通过 20+ 学生实际使用持续修正课程结构和交互机制。"
+                  en: "Translated syllabus structure, exam expectations, recurring errors and revision behavior into a unified digital learning experience iterated through real usage by 20+ students."
+          - id: p9701-tradeoff
+            facts:
+              - "曾将早期 3D reaction network 改为更清晰的 2D 信息结构"
+              - "原因包括移动端使用、认知负担与真实复习效率"
+            default_profile: ai_product
+            variants:
+              - profile: ai_product
+                tags: [product decision, user behavior, tradeoff, usability, iteration]
+                text:
+                  zh: "基于移动端使用方式、认知负担与复习效率主动推翻早期 3D reaction network 设计，改为更清晰、可检索的 2D 信息结构；把“视觉复杂度”让位于真实学习任务中的可用性。"
+                  en: "Reversed an early 3D reaction-network direction after evaluating mobile behavior, cognitive load and revision efficiency, moving to a clearer searchable 2D structure—prioritizing real learning utility over visual sophistication."
+              - profile: education_product
+                tags: [cognitive load, learning design, mobile, usability]
+                text:
+                  zh: "根据学生真实复习场景将早期 3D reaction network 改为更清晰的 2D 结构，降低移动端操作与认知成本，使信息更适合检索、回忆和考试复习。"
+                  en: "Shifted from a 3D reaction network to a clearer 2D structure to reduce mobile interaction and cognitive cost for retrieval and exam revision."
+          - id: p9701-ai-boundary
+            facts:
+              - "确定性答案、知识回忆优先 deterministic interaction"
+              - "开放表达再评估 AI 是否有真实增益"
+            default_profile: ai_product
+            variants:
+              - profile: ai_product
+                tags: [ai boundary, deterministic, llm, product judgment, reliability]
+                text:
+                  zh: "按任务不确定性划分 AI 边界：标准答案、知识回忆和可枚举反馈优先 deterministic interaction；只有开放表达理解与重构等环节才引入生成式 AI，避免为 AI 而 AI。"
+                  en: "Set AI boundaries by task uncertainty: deterministic interactions handle known answers, retrieval and enumerable feedback, while generative AI is reserved for interpreting and reconstructing open-ended responses."
+      - id: raku
+        title: { zh: "Teach Raku a Game", en: "Teach Raku a Game" }
+        subtitle: { zh: "AI Collaborative Learning Prototype｜Product Design + Agent Interaction + Eval", en: "AI Collaborative Learning Prototype · Product Design + Agent Interaction + Eval" }
+        meta: { zh: "2026.08｜Prototype + Eval", en: "Aug 2026 · Prototype + Eval" }
+        bullets:
+          - id: raku-problem
+            facts:
+              - "8–10 分钟 AI 协作学习闭环"
+              - "抽象 9 类学生沟通失败模式"
+            default_profile: ai_product
+            variants:
+              - profile: ai_product
+                tags: [agent product, user behavior, learning objective, interaction design]
+                text:
+                  zh: "设计 8–10 分钟 Agent-mediated learning loop，让学生通过教 AI 玩多步骤游戏建立 shared process understanding；从真实教学中抽象 9 类沟通失败模式，并转化为产品状态与 AI response strategy。"
+                  en: "Designed an 8–10 minute agent-mediated learning loop in which students teach an AI a multi-step game; translated nine recurring communication failure modes into product states and response strategies."
+              - profile: education_product
+                tags: [learning objective, communication, scaffolding, student behavior]
+                text:
+                  zh: "围绕“根据听众状态提供足够信息并通过行为验证理解”这一学习目标，将碎片化表达、默认共享背景、顺序缺失、条件遗漏等 9 类学生困难转化为可观察、可练习的学习行为。"
+                  en: "Turned nine common communication difficulties into observable practice around adapting explanations to a listener and verifying shared understanding through behavior."
+          - id: raku-boundary
+            facts:
+              - "可枚举流程、游戏状态与完成条件使用 deterministic logic"
+              - "开放语言理解与下一步教学回应交给 LLM"
+              - "设计 Leakage Guard 防止 AI 过早补全答案"
+            default_profile: ai_product
+            variants:
+              - profile: ai_product
+                tags: [llm, guardrail, deterministic, agent, ai safety, state machine]
+                text:
+                  zh: "明确 deterministic 与 generative AI 的职责边界：状态和完成条件使用规则系统，开放语言理解与下一步教学回应交给 LLM；通过 Leakage Guard 防止 Agent 因模型能力过强而替学生完成关键认知工作。"
+                  en: "Separated deterministic game state and completion logic from LLM-based language interpretation and teaching responses, with a Leakage Guard preventing the agent from completing the learner's cognitive work for them."
+              - profile: technical
+                tags: [state machine, structured output, guardrail, llm orchestration]
+                text:
+                  zh: "将可枚举状态固化为 state transition，把开放理解限制在 structured LLM output，并通过 Leakage Guard 约束模型越权行为，使 Agent 行为可测、可回放、可修订。"
+                  en: "Encoded enumerable behavior in state transitions, constrained open interpretation to structured LLM output and guarded against model overreach so agent behavior remained testable and revisable."
+          - id: raku-eval
+            facts:
+              - "使用 Dify workflow、structured output、conversation trace、live run 与 Eval cases"
+              - "覆盖正确、部分正确、表达混乱、跑题及异常路径"
+            default_profile: ai_product
+            variants:
+              - profile: ai_product
+                tags: [eval, bad cases, structured output, testing, iteration]
+                text:
+                  zh: "使用 structured output、conversation trace、live runs 与 Eval cases 覆盖正确、部分正确、表达混乱、跑题及异常路径，并根据 bad cases 迭代 Prompt、状态机与完成条件。"
+                  en: "Used structured outputs, conversation traces, live runs and eval cases across correct, partial, confused, off-task and abnormal paths, iterating prompts, state transitions and completion criteria from bad cases."
+      - id: foundry
+        title: { zh: "Learning Foundry", en: "Learning Foundry" }
+        subtitle: { zh: "Expert-governed AI Learning Infrastructure｜Product Architecture", en: "Expert-governed AI Learning Infrastructure · Product Architecture" }
+        meta: { zh: "Work in Progress", en: "Work in Progress" }
+        bullets:
+          - id: foundry-lifecycle
+            facts:
+              - "定义 authoring、evaluation、expert review、registry、runtime delivery、learner trace、revision、rollback 生命周期"
+              - "将课程知识与 component behaviour 分离"
+            default_profile: ai_product
+            variants:
+              - profile: ai_product
+                tags: [platform, product architecture, governance, lifecycle, infrastructure]
+                text:
+                  zh: "定义 expert-governed learning component 生命周期，将课程知识与 component behaviour 分离，并贯通 authoring、evaluation、expert review、registry、runtime、learner trace、revision 与 rollback，探索可测试、可版本化的 AI Learning 基础设施。"
+                  en: "Defined an expert-governed learning-component lifecycle that separates curriculum knowledge from component behavior across authoring, evaluation, review, registry, runtime, learner trace, revision and rollback."
+              - profile: technical
+                tags: [schema, protocol, versioning, runtime, architecture]
+                text:
+                  zh: "设计 component protocol、schema、状态、证据与版本边界，使外部课程知识可以通过统一协议接入，同时保持 runtime 行为可测试、可回滚。"
+                  en: "Designed component protocols, schemas, state and evidence boundaries so external curriculum knowledge can plug into a testable, versioned and rollback-capable runtime."
+          - id: foundry-ai-boundary
+            facts:
+              - "核心研究 AI / deterministic / human review 的职责边界"
+            default_profile: ai_product
+            variants:
+              - profile: ai_product
+                tags: [human in the loop, ai governance, deterministic, evaluation, product strategy]
+                text:
+                  zh: "把重点放在 AI、deterministic checking 与 human review 的责任边界：生成式能力只有在不确定判断上介入，正式发布仍要求可验证证据和专家治理，而非单纯扩大模型生成能力。"
+                  en: "Focused the product architecture on responsibility boundaries between generative AI, deterministic checking and human review, requiring verifiable evidence and expert governance before release."
+
+about:
+  title: { zh: "个人概述", en: "PROFILE" }
+  paragraphs:
+    - zh: "具备约六年软件工程、国际教育、课程研发与数字产品实践。早期参与分布式流数据库 HStreamDB 的生产研发与版本交付，后长期工作于国际学校一线，深度介入课程体系建设、学生全生命周期决策、考试运营与教师培养，并独立设计、开发和上线面向真实学生使用的学习产品。"
+      en: "Six years across software engineering, international education, curriculum development and digital product work. Began in production distributed-systems engineering, then moved into frontline education where I owned curriculum systems, student lifecycle decisions, assessment operations and teacher enablement while building learning products used by real students."
+    - zh: "当前聚焦 AI Learning Product，擅长从真实用户问题出发完成问题定义、产品机制设计、技术边界判断、快速原型、Eval 与迭代；尤其关注生成式 AI、确定性系统与人工判断各自应该承担什么，而不是把 AI 简化为内容生成或聊天机器人。"
+      en: "Now focused on AI Learning Product: problem framing, interaction and system design, technical trade-offs, rapid prototyping, evaluation and iteration—with particular attention to where generative AI, deterministic systems and human judgment should each be responsible."
+
+skills:
+  - label: { zh: "Product", en: "Product" }
+    items: ["Problem Framing", "User Research", "MVP Scope", "PRD", "User Flow", "Prototype Validation", "Prioritization"]
+  - label: { zh: "AI Product", en: "AI Product" }
+    items: ["LLM Workflow", "Structured Output", "Agent Interaction", "RAG", "Guardrail", "Eval", "Bad-case Analysis", "HITL"]
+  - label: { zh: "Learning Product", en: "Learning Product" }
+    items: ["Curriculum Design", "Assessment", "Scaffolding", "Retrieval Practice", "Learner Behaviour", "Teacher Workflow"]
+  - label: { zh: "Engineering", en: "Engineering" }
+    items: ["TypeScript", "React", "Node.js", "Python", "SQL", "Supabase/PostgreSQL", "API", "Git", "Docker", "CI/CD"]
