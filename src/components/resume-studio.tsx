@@ -1,8 +1,23 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { defaultSelections, recommendSelections } from "@/lib/matcher";
-import type { Bullet, Entry, Locale, Profile, ResumeMaster, SelectionState } from "@/lib/types";
+import {
+  duplicateSnapshot,
+  loadSnapshotStore,
+  makeSnapshot,
+  parseSnapshotJson,
+  saveSnapshotStore,
+} from "@/lib/storage";
+import type {
+  ApplicationSnapshot,
+  Bullet,
+  Entry,
+  Locale,
+  Profile,
+  ResumeMaster,
+  SelectionState,
+} from "@/lib/types";
 
 const PROFILE_LABEL: Record<Profile, string> = {
   ai_product: "AI Product",
@@ -16,6 +31,31 @@ const PROFILE_ORDER: Profile[] = ["ai_product", "education_product", "solutions"
 function getBulletText(bullet: Bullet, selection: SelectionState[string], locale: Locale) {
   const variant = bullet.variants.find((item) => item.profile === selection.profile) ?? bullet.variants[0];
   return variant.text[locale];
+}
+
+function normalizeSelection(master: ResumeMaster, next: SelectionState): SelectionState {
+  return { ...defaultSelections(master), ...next };
+}
+
+function collectRenderedText(master: ResumeMaster, selection: SelectionState, locale: Locale) {
+  const rendered: Record<string, string> = {};
+  for (const section of master.sections) {
+    for (const entry of section.entries) {
+      for (const bullet of entry.bullets) {
+        const state = selection[bullet.id];
+        if (state?.enabled) rendered[bullet.id] = getBulletText(bullet, state, locale);
+      }
+    }
+  }
+  return rendered;
+}
+
+function formatSavedAt(value: string | null, locale: Locale) {
+  if (!value) return locale === "zh" ? "仅保存在本机" : "Local only";
+  return new Date(value).toLocaleTimeString(locale === "zh" ? "zh-CN" : "en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 function ScoreBadge({ score }: { score?: number }) {
@@ -59,7 +99,173 @@ export function ResumeStudio({ master }: { master: ResumeMaster }) {
   const [jd, setJd] = useState("");
   const [selection, setSelection] = useState<SelectionState>(() => defaultSelections(master));
   const [zoom, setZoom] = useState(0.72);
+  const [applications, setApplications] = useState<ApplicationSnapshot[]>([]);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [hydrated, setHydrated] = useState(false);
+  const [savedAt, setSavedAt] = useState<string | null>(null);
+
   const selectedCount = useMemo(() => Object.values(selection).filter((item) => item.enabled).length, [selection]);
+  const activeApplication = useMemo(() => applications.find((item) => item.id === activeId) ?? null, [applications, activeId]);
+
+  useEffect(() => {
+    const stored = loadSnapshotStore();
+    if (stored?.applications.length) {
+      const active = stored.applications.find((item) => item.id === stored.activeId) ?? stored.applications[0];
+      setApplications(stored.applications);
+      setActiveId(active.id);
+      setJd(active.jd);
+      setLocale(active.locale);
+      setSelection(normalizeSelection(master, active.selection));
+      setSavedAt(active.updatedAt);
+    } else {
+      const initialSelection = defaultSelections(master);
+      const initial = makeSnapshot({
+        name: "Working draft",
+        jd: "",
+        locale: "zh",
+        selection: initialSelection,
+        renderedText: collectRenderedText(master, initialSelection, "zh"),
+      });
+      setApplications([initial]);
+      setActiveId(initial.id);
+      saveSnapshotStore({ schemaVersion: 1, activeId: initial.id, applications: [initial] });
+      setSavedAt(initial.updatedAt);
+    }
+    setHydrated(true);
+  }, [master]);
+
+  useEffect(() => {
+    if (!hydrated || !activeId) return;
+    const timer = window.setTimeout(() => {
+      const now = new Date().toISOString();
+      setApplications((current) => {
+        const next = current.map((application) => application.id === activeId ? {
+          ...application,
+          jd,
+          locale,
+          selection,
+          renderedText: collectRenderedText(master, selection, locale),
+          updatedAt: now,
+        } : application);
+        saveSnapshotStore({ schemaVersion: 1, activeId, applications: next });
+        return next;
+      });
+      setSavedAt(now);
+    }, 250);
+    return () => window.clearTimeout(timer);
+  }, [activeId, hydrated, jd, locale, master, selection]);
+
+  const captureCurrent = (source = applications) => {
+    if (!activeId) return source;
+    const now = new Date().toISOString();
+    return source.map((application) => application.id === activeId ? {
+      ...application,
+      jd,
+      locale,
+      selection,
+      renderedText: collectRenderedText(master, selection, locale),
+      updatedAt: now,
+    } : application);
+  };
+
+  const persistApplications = (next: ApplicationSnapshot[], nextActiveId: string) => {
+    setApplications(next);
+    setActiveId(nextActiveId);
+    saveSnapshotStore({ schemaVersion: 1, activeId: nextActiveId, applications: next });
+    setSavedAt(new Date().toISOString());
+  };
+
+  const loadApplication = (application: ApplicationSnapshot) => {
+    const committed = captureCurrent();
+    const target = committed.find((item) => item.id === application.id) ?? application;
+    persistApplications(committed, target.id);
+    setJd(target.jd);
+    setLocale(target.locale);
+    setSelection(normalizeSelection(master, target.selection));
+    setSavedAt(target.updatedAt);
+  };
+
+  const createApplication = () => {
+    const committed = captureCurrent();
+    const nextSelection = defaultSelections(master);
+    const created = makeSnapshot({
+      name: locale === "zh" ? "新投递" : "New application",
+      jd: "",
+      locale,
+      selection: nextSelection,
+      renderedText: collectRenderedText(master, nextSelection, locale),
+    });
+    persistApplications([created, ...committed], created.id);
+    setJd("");
+    setSelection(nextSelection);
+  };
+
+  const renameApplication = (name: string) => {
+    if (!activeId) return;
+    const next = applications.map((application) => application.id === activeId ? { ...application, name, updatedAt: new Date().toISOString() } : application);
+    persistApplications(next, activeId);
+  };
+
+  const duplicateApplication = () => {
+    if (!activeApplication) return;
+    const committed = captureCurrent();
+    const source = committed.find((item) => item.id === activeApplication.id) ?? activeApplication;
+    const copy = duplicateSnapshot(source);
+    persistApplications([copy, ...committed], copy.id);
+    setJd(copy.jd);
+    setLocale(copy.locale);
+    setSelection(normalizeSelection(master, copy.selection));
+  };
+
+  const deleteApplication = () => {
+    if (!activeId) return;
+    if (applications.length > 1 && !window.confirm(locale === "zh" ? "删除这个本地版本？" : "Delete this local version?")) return;
+    let next = captureCurrent().filter((application) => application.id !== activeId);
+    if (!next.length) {
+      const nextSelection = defaultSelections(master);
+      next = [makeSnapshot({
+        name: locale === "zh" ? "新投递" : "New application",
+        jd: "",
+        locale,
+        selection: nextSelection,
+        renderedText: collectRenderedText(master, nextSelection, locale),
+      })];
+    }
+    const target = next[0];
+    persistApplications(next, target.id);
+    setJd(target.jd);
+    setLocale(target.locale);
+    setSelection(normalizeSelection(master, target.selection));
+  };
+
+  const exportApplication = () => {
+    if (!activeApplication) return;
+    const committed = captureCurrent();
+    const snapshot = committed.find((item) => item.id === activeApplication.id) ?? activeApplication;
+    persistApplications(committed, snapshot.id);
+    const blob = new Blob([JSON.stringify(snapshot, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `${snapshot.name.replace(/[^a-zA-Z0-9\u4e00-\u9fff_-]+/g, "-") || "application"}.json`;
+    anchor.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const importApplication = async (file: File | undefined) => {
+    if (!file) return;
+    const imported = parseSnapshotJson(await file.text());
+    if (!imported) {
+      window.alert(locale === "zh" ? "无法读取这个版本文件。" : "Could not read this snapshot file.");
+      return;
+    }
+    imported.selection = normalizeSelection(master, imported.selection);
+    const committed = captureCurrent();
+    persistApplications([imported, ...committed], imported.id);
+    setJd(imported.jd);
+    setLocale(imported.locale);
+    setSelection(imported.selection);
+  };
 
   const analyze = () => {
     if (jd.trim()) setSelection(recommendSelections(master, jd));
@@ -77,6 +283,7 @@ export function ResumeStudio({ master }: { master: ResumeMaster }) {
           <p>Locked facts. JD-aware selection. Human-approved wording.</p>
         </div>
         <div className="appbar-actions">
+          <span className="save-indicator">● {locale === "zh" ? "已保存在本机" : "Saved locally"} · {formatSavedAt(savedAt, locale)}</span>
           <div className="segmented">
             <button className={locale === "zh" ? "active" : ""} onClick={() => setLocale("zh")}>中文</button>
             <button className={locale === "en" ? "active" : ""} onClick={() => setLocale("en")}>EN</button>
@@ -88,7 +295,33 @@ export function ResumeStudio({ master }: { master: ResumeMaster }) {
 
       <div className="workspace">
         <aside className="jd-panel no-print">
-          <div className="panel-heading">
+          <section className="applications-block">
+            <div className="applications-heading">
+              <div><span className="eyebrow">APPLICATIONS</span><strong>{locale === "zh" ? "本地版本" : "Local versions"}</strong></div>
+              <button className="text-button" onClick={createApplication}>+ {locale === "zh" ? "新建" : "New"}</button>
+            </div>
+            <div className="application-list">
+              {applications.map((application) => (
+                <button key={application.id} className={`application-row ${application.id === activeId ? "active" : ""}`} onClick={() => loadApplication(application)}>
+                  <span>{application.name}</span>
+                  <small>{new Date(application.updatedAt).toLocaleDateString(locale === "zh" ? "zh-CN" : "en-US", { month: "short", day: "numeric" })}</small>
+                </button>
+              ))}
+            </div>
+            {activeApplication && (
+              <>
+                <input className="application-name" value={activeApplication.name} onChange={(event) => renameApplication(event.target.value)} aria-label="Application name" />
+                <div className="snapshot-actions">
+                  <button onClick={duplicateApplication}>{locale === "zh" ? "复制" : "Duplicate"}</button>
+                  <button onClick={exportApplication}>{locale === "zh" ? "导出 JSON" : "Export JSON"}</button>
+                  <label>{locale === "zh" ? "导入" : "Import"}<input type="file" accept="application/json,.json" onChange={(event) => { void importApplication(event.target.files?.[0]); event.currentTarget.value = ""; }} /></label>
+                  <button className="danger-text" onClick={deleteApplication}>{locale === "zh" ? "删除" : "Delete"}</button>
+                </div>
+              </>
+            )}
+          </section>
+
+          <div className="panel-heading jd-heading">
             <span className="eyebrow">01 · TARGET ROLE</span>
             <h2>Paste the JD</h2>
             <p>We score against your existing evidence. No claims are invented.</p>
