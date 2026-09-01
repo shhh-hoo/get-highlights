@@ -55,3 +55,22 @@ export type BulletSelection = {
 };
 
 export type SelectionState = Record<string, BulletSelection>;
+
+export type ApplicationSnapshot = {
+  schemaVersion: 1;
+  masterRevision: string;
+  id: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+  jd: string;
+  locale: Locale;
+  selection: SelectionState;
+  renderedText: Record<string, string>;
+};
+
+export type SnapshotStore = {
+  schemaVersion: 1;
+  activeId: string | null;
+  applications: ApplicationSnapshot[];
+};
