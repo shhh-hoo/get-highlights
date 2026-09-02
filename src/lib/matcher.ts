@@ -90,6 +90,12 @@ function selectWithinSection(sectionId: string, ranked: RankedBullet[]) {
     return true;
   };
 
+  const evidenceAnchors = [...ranked]
+    .filter((item) => item.evidence >= 18)
+    .sort((a, b) => b.evidence - a.evidence || b.score - a.score)
+    .slice(0, Math.min(2, budget));
+  for (const item of evidenceAnchors) add(item);
+
   if (sectionId === "projects") {
     const entryIds = Array.from(new Set(ranked.map((item) => item.entry.id)));
     for (const entryId of entryIds) {
@@ -101,7 +107,7 @@ function selectWithinSection(sectionId: string, ranked: RankedBullet[]) {
   }
 
   for (const item of [...ranked].sort((a, b) => b.score - a.score)) {
-    if (item.score >= 42) add(item);
+    if (item.score >= 42 || item.evidence >= 18) add(item);
   }
 
   return selected;
