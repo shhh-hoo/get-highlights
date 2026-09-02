@@ -1,4 +1,4 @@
-import { formatBulletWithSummary } from "./bullet-summaries";
+import { formatBulletWithSummary } from "./bullet-summaries.ts";
 import type {
   Locale,
   RenderedResumeDocument,
