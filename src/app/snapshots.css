@@ -101,6 +101,19 @@
   border-color: #8aa7c2;
 }
 
+.refresh-master {
+  width: 100%;
+  margin-top: 7px;
+  border: 1px solid #e3c985;
+  background: #fff9e8;
+  color: #805c12;
+  border-radius: 7px;
+  padding: 6px 8px;
+  font-size: 9.5px;
+  font-weight: 700;
+  text-align: left;
+}
+
 .snapshot-actions {
   display: flex;
   flex-wrap: wrap;
