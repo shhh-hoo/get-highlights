@@ -3,6 +3,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { defaultSelections, recommendSelections } from "@/lib/matcher";
 import {
+  buildRenderedDocument,
+  reconcileRenderedDocument,
+  renderedTextMap,
+} from "@/lib/rendered-document";
+import {
   duplicateSnapshot,
   loadSnapshotStore,
   makeSnapshot,
@@ -12,9 +17,10 @@ import {
 import type {
   ApplicationSnapshot,
   Bullet,
-  Entry,
   Locale,
   Profile,
+  RenderedEntry,
+  RenderedResumeDocument,
   ResumeMaster,
   SelectionState,
 } from "@/lib/types";
@@ -28,26 +34,28 @@ const PROFILE_LABEL: Record<Profile, string> = {
 
 const PROFILE_ORDER: Profile[] = ["ai_product", "education_product", "solutions", "technical"];
 
-function getBulletText(bullet: Bullet, selection: SelectionState[string], locale: Locale) {
-  const variant = bullet.variants.find((item) => item.profile === selection.profile) ?? bullet.variants[0];
+function currentBulletText(bullet: Bullet, state: SelectionState[string], locale: Locale) {
+  const variant = bullet.variants.find((item) => item.profile === state.profile) ?? bullet.variants[0];
   return variant.text[locale];
 }
 
-function normalizeSelection(master: ResumeMaster, next: SelectionState): SelectionState {
-  return { ...defaultSelections(master), ...next };
-}
-
-function collectRenderedText(master: ResumeMaster, selection: SelectionState, locale: Locale) {
-  const rendered: Record<string, string> = {};
+function normalizeSnapshotSelection(master: ResumeMaster, next: SelectionState): SelectionState {
+  const result: SelectionState = {};
   for (const section of master.sections) {
     for (const entry of section.entries) {
       for (const bullet of entry.bullets) {
-        const state = selection[bullet.id];
-        if (state?.enabled) rendered[bullet.id] = getBulletText(bullet, state, locale);
+        const candidate = next[bullet.id];
+        const fallback = bullet.default_profile ?? bullet.variants[0].profile;
+        const profile = candidate && bullet.variants.some((variant) => variant.profile === candidate.profile)
+          ? candidate.profile
+          : fallback;
+        result[bullet.id] = candidate
+          ? { enabled: candidate.enabled, profile, score: candidate.score }
+          : { enabled: false, profile };
       }
     }
   }
-  return rendered;
+  return result;
 }
 
 function formatSavedAt(value: string | null, locale: Locale) {
@@ -64,10 +72,17 @@ function ScoreBadge({ score }: { score?: number }) {
   return <span className={`score score-${level}`}>{score}%</span>;
 }
 
-function BulletEditor({ bullet, state, locale, onChange }: {
+function BulletEditor({
+  bullet,
+  state,
+  locale,
+  displayText,
+  onChange,
+}: {
   bullet: Bullet;
   state: SelectionState[string];
   locale: Locale;
+  displayText?: string;
   onChange: (next: SelectionState[string]) => void;
 }) {
   const availableProfiles = PROFILE_ORDER.filter((profile) => bullet.variants.some((variant) => variant.profile === profile));
@@ -80,7 +95,7 @@ function BulletEditor({ bullet, state, locale, onChange }: {
         </label>
         <ScoreBadge score={state.score} />
       </div>
-      <p className="bullet-copy">{getBulletText(bullet, state, locale)}</p>
+      <p className="bullet-copy">{displayText ?? currentBulletText(bullet, state, locale)}</p>
       <div className="bullet-actions">
         <select value={state.profile} onChange={(event) => onChange({ ...state, profile: event.target.value as Profile })}>
           {availableProfiles.map((profile) => <option key={profile} value={profile}>{PROFILE_LABEL[profile]}</option>)}
@@ -95,44 +110,56 @@ function BulletEditor({ bullet, state, locale, onChange }: {
 }
 
 export function ResumeStudio({ master }: { master: ResumeMaster }) {
+  const initialSelection = useMemo(() => defaultSelections(master), [master]);
   const [locale, setLocale] = useState<Locale>("zh");
   const [jd, setJd] = useState("");
-  const [selection, setSelection] = useState<SelectionState>(() => defaultSelections(master));
+  const [selection, setSelection] = useState<SelectionState>(initialSelection);
+  const [renderedDocument, setRenderedDocument] = useState<RenderedResumeDocument>(() => buildRenderedDocument(master, initialSelection, "zh"));
   const [zoom, setZoom] = useState(0.72);
   const [applications, setApplications] = useState<ApplicationSnapshot[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [hydrated, setHydrated] = useState(false);
   const [savedAt, setSavedAt] = useState<string | null>(null);
+  const [pageOverflow, setPageOverflow] = useState<number[]>([0, 0]);
 
   const selectedCount = useMemo(() => Object.values(selection).filter((item) => item.enabled).length, [selection]);
   const activeApplication = useMemo(() => applications.find((item) => item.id === activeId) ?? null, [applications, activeId]);
+  const historicalText = useMemo(() => renderedTextMap(renderedDocument), [renderedDocument]);
+  const hasOverflow = pageOverflow.some((pixels) => pixels > 2);
+  const staleMaster = Boolean(activeApplication && activeApplication.masterRevision !== master.revision);
 
   useEffect(() => {
     const stored = loadSnapshotStore();
     if (stored?.applications.length) {
       const active = stored.applications.find((item) => item.id === stored.activeId) ?? stored.applications[0];
+      const normalized = normalizeSnapshotSelection(master, active.selection);
+      const document = active.renderedDocument ?? buildRenderedDocument(master, normalized, active.locale);
       setApplications(stored.applications);
       setActiveId(active.id);
       setJd(active.jd);
       setLocale(active.locale);
-      setSelection(normalizeSelection(master, active.selection));
+      setSelection(normalized);
+      setRenderedDocument(document);
       setSavedAt(active.updatedAt);
     } else {
-      const initialSelection = defaultSelections(master);
+      const document = buildRenderedDocument(master, initialSelection, "zh");
       const initial = makeSnapshot({
         name: "Working draft",
         jd: "",
         locale: "zh",
         selection: initialSelection,
-        renderedText: collectRenderedText(master, initialSelection, "zh"),
+        renderedText: renderedTextMap(document),
+        renderedDocument: document,
+        masterRevision: master.revision,
       });
       setApplications([initial]);
       setActiveId(initial.id);
-      saveSnapshotStore({ schemaVersion: 1, activeId: initial.id, applications: [initial] });
+      setRenderedDocument(document);
+      saveSnapshotStore({ schemaVersion: 2, activeId: initial.id, applications: [initial] });
       setSavedAt(initial.updatedAt);
     }
     setHydrated(true);
-  }, [master]);
+  }, [initialSelection, master]);
 
   useEffect(() => {
     if (!hydrated || !activeId) return;
@@ -141,29 +168,55 @@ export function ResumeStudio({ master }: { master: ResumeMaster }) {
       setApplications((current) => {
         const next = current.map((application) => application.id === activeId ? {
           ...application,
+          schemaVersion: 2 as const,
           jd,
           locale,
           selection,
-          renderedText: collectRenderedText(master, selection, locale),
+          renderedText: renderedTextMap(renderedDocument),
+          renderedDocument,
           updatedAt: now,
         } : application);
-        saveSnapshotStore({ schemaVersion: 1, activeId, applications: next });
+        saveSnapshotStore({ schemaVersion: 2, activeId, applications: next });
         return next;
       });
       setSavedAt(now);
-    }, 250);
+    }, 300);
     return () => window.clearTimeout(timer);
-  }, [activeId, hydrated, jd, locale, master, selection]);
+  }, [activeId, hydrated, jd, locale, renderedDocument, selection]);
+
+  useEffect(() => {
+    let frame = 0;
+    let observer: ResizeObserver | null = null;
+
+    const measure = () => {
+      const pages = Array.from(document.querySelectorAll<HTMLElement>("#print-resume .paper"));
+      setPageOverflow(pages.map((page) => Math.max(0, page.scrollHeight - page.clientHeight)));
+    };
+
+    frame = window.requestAnimationFrame(measure);
+    if (typeof ResizeObserver !== "undefined") {
+      observer = new ResizeObserver(measure);
+      for (const page of document.querySelectorAll<HTMLElement>("#print-resume .paper")) observer.observe(page);
+    }
+    void document.fonts?.ready.then(measure);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      observer?.disconnect();
+    };
+  }, [renderedDocument]);
 
   const captureCurrent = (source = applications) => {
     if (!activeId) return source;
     const now = new Date().toISOString();
     return source.map((application) => application.id === activeId ? {
       ...application,
+      schemaVersion: 2 as const,
       jd,
       locale,
       selection,
-      renderedText: collectRenderedText(master, selection, locale),
+      renderedText: renderedTextMap(renderedDocument),
+      renderedDocument,
       updatedAt: now,
     } : application);
   };
@@ -171,38 +224,66 @@ export function ResumeStudio({ master }: { master: ResumeMaster }) {
   const persistApplications = (next: ApplicationSnapshot[], nextActiveId: string) => {
     setApplications(next);
     setActiveId(nextActiveId);
-    saveSnapshotStore({ schemaVersion: 1, activeId: nextActiveId, applications: next });
+    saveSnapshotStore({ schemaVersion: 2, activeId: nextActiveId, applications: next });
     setSavedAt(new Date().toISOString());
+  };
+
+  const applySelection = (nextSelection: SelectionState) => {
+    const document = reconcileRenderedDocument({
+      master,
+      previousDocument: renderedDocument,
+      previousSelection: selection,
+      nextSelection,
+      locale,
+    });
+    setSelection(nextSelection);
+    setRenderedDocument(document);
+  };
+
+  const markCurrentMasterRevision = () => {
+    if (!activeId) return;
+    setApplications((current) => current.map((application) => application.id === activeId
+      ? { ...application, masterRevision: master.revision }
+      : application));
   };
 
   const loadApplication = (application: ApplicationSnapshot) => {
     const committed = captureCurrent();
     const target = committed.find((item) => item.id === application.id) ?? application;
+    const normalized = normalizeSnapshotSelection(master, target.selection);
+    const document = target.renderedDocument ?? buildRenderedDocument(master, normalized, target.locale);
     persistApplications(committed, target.id);
     setJd(target.jd);
     setLocale(target.locale);
-    setSelection(normalizeSelection(master, target.selection));
+    setSelection(normalized);
+    setRenderedDocument(document);
     setSavedAt(target.updatedAt);
   };
 
   const createApplication = () => {
     const committed = captureCurrent();
     const nextSelection = defaultSelections(master);
+    const document = buildRenderedDocument(master, nextSelection, locale);
     const created = makeSnapshot({
       name: locale === "zh" ? "新投递" : "New application",
       jd: "",
       locale,
       selection: nextSelection,
-      renderedText: collectRenderedText(master, nextSelection, locale),
+      renderedText: renderedTextMap(document),
+      renderedDocument: document,
+      masterRevision: master.revision,
     });
     persistApplications([created, ...committed], created.id);
     setJd("");
     setSelection(nextSelection);
+    setRenderedDocument(document);
   };
 
   const renameApplication = (name: string) => {
     if (!activeId) return;
-    const next = applications.map((application) => application.id === activeId ? { ...application, name, updatedAt: new Date().toISOString() } : application);
+    const next = applications.map((application) => application.id === activeId
+      ? { ...application, name, updatedAt: new Date().toISOString() }
+      : application);
     persistApplications(next, activeId);
   };
 
@@ -214,7 +295,8 @@ export function ResumeStudio({ master }: { master: ResumeMaster }) {
     persistApplications([copy, ...committed], copy.id);
     setJd(copy.jd);
     setLocale(copy.locale);
-    setSelection(normalizeSelection(master, copy.selection));
+    setSelection(normalizeSnapshotSelection(master, copy.selection));
+    setRenderedDocument(copy.renderedDocument ?? buildRenderedDocument(master, copy.selection, copy.locale));
   };
 
   const deleteApplication = () => {
@@ -223,19 +305,24 @@ export function ResumeStudio({ master }: { master: ResumeMaster }) {
     let next = captureCurrent().filter((application) => application.id !== activeId);
     if (!next.length) {
       const nextSelection = defaultSelections(master);
+      const document = buildRenderedDocument(master, nextSelection, locale);
       next = [makeSnapshot({
         name: locale === "zh" ? "新投递" : "New application",
         jd: "",
         locale,
         selection: nextSelection,
-        renderedText: collectRenderedText(master, nextSelection, locale),
+        renderedText: renderedTextMap(document),
+        renderedDocument: document,
+        masterRevision: master.revision,
       })];
     }
     const target = next[0];
+    const normalized = normalizeSnapshotSelection(master, target.selection);
     persistApplications(next, target.id);
     setJd(target.jd);
     setLocale(target.locale);
-    setSelection(normalizeSelection(master, target.selection));
+    setSelection(normalized);
+    setRenderedDocument(target.renderedDocument ?? buildRenderedDocument(master, normalized, target.locale));
   };
 
   const exportApplication = () => {
@@ -259,21 +346,42 @@ export function ResumeStudio({ master }: { master: ResumeMaster }) {
       window.alert(locale === "zh" ? "无法读取这个版本文件。" : "Could not read this snapshot file.");
       return;
     }
-    imported.selection = normalizeSelection(master, imported.selection);
+    imported.selection = normalizeSnapshotSelection(master, imported.selection);
+    imported.renderedDocument = imported.renderedDocument ?? buildRenderedDocument(master, imported.selection, imported.locale);
+    imported.renderedText = renderedTextMap(imported.renderedDocument);
     const committed = captureCurrent();
     persistApplications([imported, ...committed], imported.id);
     setJd(imported.jd);
     setLocale(imported.locale);
     setSelection(imported.selection);
+    setRenderedDocument(imported.renderedDocument);
   };
 
   const analyze = () => {
-    if (jd.trim()) setSelection(recommendSelections(master, jd));
+    if (!jd.trim()) return;
+    applySelection(recommendSelections(master, jd));
   };
 
   const updateBullet = (id: string, next: SelectionState[string]) => {
-    setSelection((current) => ({ ...current, [id]: next }));
+    applySelection({ ...selection, [id]: next });
   };
+
+  const changeLocale = (nextLocale: Locale) => {
+    if (nextLocale === locale) return;
+    setLocale(nextLocale);
+    setRenderedDocument(buildRenderedDocument(master, selection, nextLocale));
+    markCurrentMasterRevision();
+  };
+
+  const refreshFromMaster = () => {
+    setRenderedDocument(buildRenderedDocument(master, selection, locale));
+    markCurrentMasterRevision();
+  };
+
+  const overflowLabel = pageOverflow
+    .map((pixels, index) => pixels > 2 ? `P${index + 1} +${Math.ceil(pixels * 25.4 / 96)}mm` : null)
+    .filter(Boolean)
+    .join(" · ");
 
   return (
     <main className="studio-shell">
@@ -285,11 +393,13 @@ export function ResumeStudio({ master }: { master: ResumeMaster }) {
         <div className="appbar-actions">
           <span className="save-indicator">● {locale === "zh" ? "已保存在本机" : "Saved locally"} · {formatSavedAt(savedAt, locale)}</span>
           <div className="segmented">
-            <button className={locale === "zh" ? "active" : ""} onClick={() => setLocale("zh")}>中文</button>
-            <button className={locale === "en" ? "active" : ""} onClick={() => setLocale("en")}>EN</button>
+            <button className={locale === "zh" ? "active" : ""} onClick={() => changeLocale("zh")}>中文</button>
+            <button className={locale === "en" ? "active" : ""} onClick={() => changeLocale("en")}>EN</button>
           </div>
-          <button className="secondary" onClick={() => setSelection(defaultSelections(master))}>Reset</button>
-          <button className="primary" onClick={() => window.print()}>Export PDF</button>
+          <button className="secondary" onClick={() => applySelection(defaultSelections(master))}>Reset</button>
+          <button className="primary" disabled={hasOverflow} title={hasOverflow ? "Resolve page overflow before export" : undefined} onClick={() => window.print()}>
+            {hasOverflow ? "Fix overflow" : "Export PDF"}
+          </button>
         </div>
       </header>
 
@@ -311,6 +421,11 @@ export function ResumeStudio({ master }: { master: ResumeMaster }) {
             {activeApplication && (
               <>
                 <input className="application-name" value={activeApplication.name} onChange={(event) => renameApplication(event.target.value)} aria-label="Application name" />
+                {staleMaster && (
+                  <button className="refresh-master" onClick={refreshFromMaster}>
+                    {locale === "zh" ? "此版本已冻结 · 使用最新母版刷新" : "Frozen snapshot · Refresh from current master"}
+                  </button>
+                )}
                 <div className="snapshot-actions">
                   <button onClick={duplicateApplication}>{locale === "zh" ? "复制" : "Duplicate"}</button>
                   <button onClick={exportApplication}>{locale === "zh" ? "导出 JSON" : "Export JSON"}</button>
@@ -336,7 +451,7 @@ export function ResumeStudio({ master }: { master: ResumeMaster }) {
           <div className="panel-heading sticky-title">
             <span className="eyebrow">02 · COMPOSER</span>
             <h2>Choose the evidence</h2>
-            <p>Scores reflect JD relevance, not overall quality. Override any recommendation.</p>
+            <p>Scores combine JD relevance with evidence strength. Override any recommendation.</p>
           </div>
           <div className="composer-scroll">
             {master.sections.map((section) => (
@@ -345,7 +460,16 @@ export function ResumeStudio({ master }: { master: ResumeMaster }) {
                 {section.entries.map((entry) => (
                   <div className="editor-entry" key={entry.id}>
                     <div className="editor-entry-head"><strong>{entry.title[locale]}</strong>{entry.meta && <span>{entry.meta[locale]}</span>}</div>
-                    {entry.bullets.map((bullet) => <BulletEditor key={bullet.id} bullet={bullet} state={selection[bullet.id]} locale={locale} onChange={(next) => updateBullet(bullet.id, next)} />)}
+                    {entry.bullets.map((bullet) => (
+                      <BulletEditor
+                        key={bullet.id}
+                        bullet={bullet}
+                        state={selection[bullet.id]}
+                        locale={locale}
+                        displayText={selection[bullet.id]?.enabled ? historicalText[bullet.id] : undefined}
+                        onChange={(next) => updateBullet(bullet.id, next)}
+                      />
+                    ))}
                   </div>
                 ))}
               </section>
@@ -355,12 +479,18 @@ export function ResumeStudio({ master }: { master: ResumeMaster }) {
 
         <section className="preview-panel">
           <div className="preview-toolbar no-print">
-            <div><span className="eyebrow">03 · LIVE PREVIEW</span><strong>Two-page A4</strong></div>
+            <div>
+              <span className="eyebrow">03 · LIVE PREVIEW</span>
+              <strong>Two-page A4</strong>
+              <span className={`fit-status ${hasOverflow ? "is-overflow" : "is-fit"}`}>
+                {hasOverflow ? `${locale === "zh" ? "超出" : "Overflow"}: ${overflowLabel}` : (locale === "zh" ? "页面适配正常" : "Pages fit")}
+              </span>
+            </div>
             <label>Zoom <input type="range" min="0.55" max="0.92" step="0.01" value={zoom} onChange={(event) => setZoom(Number(event.target.value))} /></label>
           </div>
           <div className="preview-stage">
             <div className="preview-stack" style={{ transform: `scale(${zoom})`, transformOrigin: "top center" }}>
-              <ResumePages master={master} selection={selection} locale={locale} />
+              <ResumePages document={renderedDocument} overflow={pageOverflow} />
             </div>
           </div>
         </section>
@@ -369,49 +499,49 @@ export function ResumeStudio({ master }: { master: ResumeMaster }) {
   );
 }
 
-function ResumePages({ master, selection, locale }: { master: ResumeMaster; selection: SelectionState; locale: Locale }) {
-  const work = master.sections.find((section) => section.id === "work");
-  const education = master.sections.find((section) => section.id === "education");
-  const projects = master.sections.find((section) => section.id === "projects");
+function ResumePages({ document, overflow }: { document: RenderedResumeDocument; overflow: number[] }) {
+  const work = document.sections.find((section) => section.id === "work");
+  const education = document.sections.find((section) => section.id === "education");
+  const projects = document.sections.find((section) => section.id === "projects");
 
-  const renderEntry = (entry: Entry) => (
+  const renderEntry = (entry: RenderedEntry) => (
     <div className="cv-entry" key={entry.id}>
       <div className="cv-entry-header">
-        <div><h3>{entry.title[locale]}</h3>{entry.subtitle && <p>{entry.subtitle[locale]}</p>}</div>
-        {entry.meta && <span>{entry.meta[locale]}</span>}
+        <div><h3>{entry.title}</h3>{entry.subtitle && <p>{entry.subtitle}</p>}</div>
+        {entry.meta && <span>{entry.meta}</span>}
       </div>
-      <ul>{entry.bullets.filter((bullet) => selection[bullet.id]?.enabled).map((bullet) => <li key={bullet.id}>{getBulletText(bullet, selection[bullet.id], locale)}</li>)}</ul>
+      <ul>{entry.bullets.map((bullet) => <li key={bullet.id}>{bullet.text}</li>)}</ul>
     </div>
   );
 
   return (
     <div id="print-resume">
-      <article className="paper page-one">
-        <ResumeHeader master={master} locale={locale} />
-        {work && <CvSection title={work.title[locale]}>{work.entries.map(renderEntry)}</CvSection>}
-        {education && <CvSection title={education.title[locale]}>{education.entries.map(renderEntry)}</CvSection>}
-        <CvSection title={master.about.title[locale]}><div className="about-copy">{master.about.paragraphs.map((paragraph) => <p key={paragraph[locale]}>{paragraph[locale]}</p>)}</div></CvSection>
+      <article className={`paper page-one ${overflow[0] > 2 ? "is-overflowing" : ""}`}>
+        <ResumeHeader document={document} />
+        {work && work.entries.length > 0 && <CvSection title={work.title}>{work.entries.map(renderEntry)}</CvSection>}
+        {education && education.entries.length > 0 && <CvSection title={education.title}>{education.entries.map(renderEntry)}</CvSection>}
+        <CvSection title={document.about.title}><div className="about-copy">{document.about.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div></CvSection>
       </article>
 
-      <article className="paper page-two">
-        <ResumeHeader master={master} locale={locale} compact />
-        {projects && <CvSection title={projects.title[locale]}>{projects.entries.map(renderEntry)}</CvSection>}
-        <CvSection title={locale === "zh" ? "核心能力" : "CORE CAPABILITIES"}>
-          <div className="skills-grid">{master.skills.map((skill) => <div key={skill.label[locale]}><strong>{skill.label[locale]}</strong><span>{skill.items.join(" · ")}</span></div>)}</div>
+      <article className={`paper page-two ${overflow[1] > 2 ? "is-overflowing" : ""}`}>
+        <ResumeHeader document={document} compact />
+        {projects && projects.entries.length > 0 && <CvSection title={projects.title}>{projects.entries.map(renderEntry)}</CvSection>}
+        <CvSection title={document.skills.title}>
+          <div className="skills-grid">{document.skills.groups.map((skill) => <div key={skill.label}><strong>{skill.label}</strong><span>{skill.items.join(" · ")}</span></div>)}</div>
         </CvSection>
       </article>
     </div>
   );
 }
 
-function ResumeHeader({ master, locale, compact = false }: { master: ResumeMaster; locale: Locale; compact?: boolean }) {
+function ResumeHeader({ document, compact = false }: { document: RenderedResumeDocument; compact?: boolean }) {
   return (
     <>
       <header className={`resume-header ${compact ? "compact" : ""}`}>
-        <div><h1>{master.identity.name}</h1><p>{master.identity.headline[locale]}</p></div>
-        <div className="contact-line">{master.identity.contact.map((item) => <span key={item}>{item}</span>)}</div>
+        <div><h1>{document.identity.name}</h1><p>{document.identity.headline}</p></div>
+        <div className="contact-line">{document.identity.contact.map((item) => <span key={item}>{item}</span>)}</div>
       </header>
-      {!compact && <div className="metric-strip">{master.metrics.map((metric) => <div key={metric.value + metric.label[locale]}><strong>{metric.value}</strong><span>{metric.label[locale]}</span></div>)}</div>}
+      {!compact && <div className="metric-strip">{document.metrics.map((metric) => <div key={metric.value + metric.label}><strong>{metric.value}</strong><span>{metric.label}</span></div>)}</div>}
     </>
   );
 }
