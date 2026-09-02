@@ -17,6 +17,7 @@ export type Bullet = {
   facts: string[];
   variants: BulletVariant[];
   default_profile?: Profile;
+  priority?: number;
 };
 
 export type Entry = {
@@ -34,6 +35,7 @@ export type Section = {
 };
 
 export type ResumeMaster = {
+  revision: string;
   identity: {
     name: string;
     headline: LocalizedText;
@@ -56,8 +58,40 @@ export type BulletSelection = {
 
 export type SelectionState = Record<string, BulletSelection>;
 
+export type RenderedEntry = {
+  id: string;
+  title: string;
+  subtitle?: string;
+  meta?: string;
+  bullets: Array<{ id: string; text: string }>;
+};
+
+export type RenderedSection = {
+  id: string;
+  title: string;
+  entries: RenderedEntry[];
+};
+
+export type RenderedResumeDocument = {
+  identity: {
+    name: string;
+    headline: string;
+    contact: string[];
+  };
+  metrics: Array<{ value: string; label: string }>;
+  sections: RenderedSection[];
+  about: {
+    title: string;
+    paragraphs: string[];
+  };
+  skills: {
+    title: string;
+    groups: Array<{ label: string; items: string[] }>;
+  };
+};
+
 export type ApplicationSnapshot = {
-  schemaVersion: 1;
+  schemaVersion: 2;
   masterRevision: string;
   id: string;
   name: string;
@@ -67,10 +101,11 @@ export type ApplicationSnapshot = {
   locale: Locale;
   selection: SelectionState;
   renderedText: Record<string, string>;
+  renderedDocument?: RenderedResumeDocument;
 };
 
 export type SnapshotStore = {
-  schemaVersion: 1;
+  schemaVersion: 2;
   activeId: string | null;
   applications: ApplicationSnapshot[];
 };
