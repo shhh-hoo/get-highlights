@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import YAML from "yaml";
-import { BULLET_SUMMARIES } from "./bullet-summaries";
+import { BULLET_SUMMARIES } from "./bullet-summaries.ts";
 import type { ResumeMaster } from "./types";
 
 export function loadResumeMaster(): ResumeMaster {
