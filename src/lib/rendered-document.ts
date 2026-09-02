@@ -1,4 +1,9 @@
-import type { Locale, RenderedResumeDocument, ResumeMaster, SelectionState } from "./types";
+import type {
+  Locale,
+  RenderedResumeDocument,
+  ResumeMaster,
+  SelectionState,
+} from "./types";
 
 export function getBulletText(master: ResumeMaster, bulletId: string, selection: SelectionState[string], locale: Locale) {
   for (const section of master.sections) {
@@ -53,6 +58,60 @@ export function buildRenderedDocument(
       groups: master.skills.map((skill) => ({ label: skill.label[locale], items: [...skill.items] })),
     },
   };
+}
+
+export function reconcileRenderedDocument({
+  master,
+  previousDocument,
+  previousSelection,
+  nextSelection,
+  locale,
+}: {
+  master: ResumeMaster;
+  previousDocument: RenderedResumeDocument;
+  previousSelection: SelectionState;
+  nextSelection: SelectionState;
+  locale: Locale;
+}) {
+  const next = buildRenderedDocument(master, nextSelection, locale);
+  const previousSections = new Map(previousDocument.sections.map((section) => [section.id, section]));
+  const previousBulletText = renderedTextMap(previousDocument);
+
+  next.identity = previousDocument.identity;
+  next.metrics = previousDocument.metrics;
+  next.about = previousDocument.about;
+  next.skills = previousDocument.skills;
+
+  next.sections = next.sections.map((section) => {
+    const oldSection = previousSections.get(section.id);
+    const oldEntries = new Map(oldSection?.entries.map((entry) => [entry.id, entry]) ?? []);
+    return {
+      ...section,
+      title: oldSection?.title ?? section.title,
+      entries: section.entries.map((entry) => {
+        const oldEntry = oldEntries.get(entry.id);
+        return {
+          ...entry,
+          title: oldEntry?.title ?? entry.title,
+          subtitle: oldEntry?.subtitle ?? entry.subtitle,
+          meta: oldEntry?.meta ?? entry.meta,
+          bullets: entry.bullets.map((bullet) => {
+            const before = previousSelection[bullet.id];
+            const after = nextSelection[bullet.id];
+            const canPreserve = Boolean(
+              before?.enabled &&
+              after?.enabled &&
+              before.profile === after.profile &&
+              previousBulletText[bullet.id],
+            );
+            return canPreserve ? { ...bullet, text: previousBulletText[bullet.id] } : bullet;
+          }),
+        };
+      }),
+    };
+  });
+
+  return next;
 }
 
 export function renderedTextMap(document: RenderedResumeDocument) {
