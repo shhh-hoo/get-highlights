@@ -1,3 +1,4 @@
+import { formatBulletWithSummary } from "./bullet-summaries";
 import type {
   Locale,
   RenderedResumeDocument,
@@ -11,7 +12,7 @@ export function getBulletText(master: ResumeMaster, bulletId: string, selection:
       const bullet = entry.bullets.find((item) => item.id === bulletId);
       if (!bullet) continue;
       const variant = bullet.variants.find((item) => item.profile === selection.profile) ?? bullet.variants[0];
-      return variant.text[locale];
+      return formatBulletWithSummary(bulletId, variant.text[locale], locale);
     }
   }
   return "";
